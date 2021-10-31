@@ -1,5 +1,5 @@
 import hashlib,time
-
+print("hello")
 class Transaction:#交易格式   
     def __init__(self,sender,receiver,amounts,fee,message):
         self.sender   = sender  #發送人
@@ -7,6 +7,7 @@ class Transaction:#交易格式
         self.amounts  = amounts #數量
         self.fee      = fee #手續費
         self.message  = message #訊息
+    print("hello1")
 
 class Block:#區塊格式   
     def __init__(self,previous_hash,difficulty,miner,miner_rewards):
@@ -18,6 +19,7 @@ class Block:#區塊格式
         self.transactions  = [] #交易紀錄
         self.miner         = miner  #礦工
         self.miner_rewards = miner_rewards  #礦工獎勵
+        print("hello2")
 
 class BlockChain:
     def __init__(self):
@@ -28,13 +30,13 @@ class BlockChain:
         self.block_limitation   =   32  #區塊容量
         self.chain  =   []  #區塊鏈
         self.pending_transacrions = []  #等待中的交易
-
+        print("hello3")
     def create_genesis_block(self):#創世塊
         print("Create genesis block ")
         new_block = Block('Hello World!',1,'hua',10)    #HASH 難度 礦工 獎勵
         new_block.hash = self.get_hash(new_block,0)
         self.chain.append(new_block)
-
+        print("hello4")
     def transaction_to_string(self, transaction):#交易明細轉換成字串
         transaction_dict ={
             'sender':str(transaction.sender),
@@ -43,14 +45,16 @@ class BlockChain:
             'fee':transaction.fee,
             'message':transaction.message
         }   
+        print("hello4")
         return str(transaction_dict)
 
     def get_transactions_string(self,block):#負責把區塊紀錄的所有交易明細轉換成一個字串
         transaction_str = ''
         for transaction in block.transactions:
             transaction_str+=self.transaction_to_string(transaction)
+        print("hello5")
         return transaction_str
-
+        
     def get_hash(self,block,nonce):#負責依據這四筆資料產生相對應的哈希數
         s = hashlib.sha1()
         s.update(
@@ -62,6 +66,7 @@ class BlockChain:
             ).encode("utf-8")
         )
         h=s.hexdigest()
+        print("hello6")
         return h
 
 
@@ -75,11 +80,12 @@ class BlockChain:
         else:
             transcation_accepted = self.pending_transactions
             self.pending_transactions = []
+        print("hello7")
         block.transactions = transcation_accepted
 
     def mine_block(self, miner):#挖掘新區塊
         start = time.process_time()
-
+        print("hello8")
         last_block = self.chain[-1]
         new_block = Block(last_block.hash, self.difficulty, miner, self.miner_rewards)
 
@@ -93,8 +99,11 @@ class BlockChain:
             #繼續挖
             new_block.nonce += 1
             new_block.hash = self.get_hash(new_block, new_block.nonce)
-
+        print("hello9")
         time_consumed = round(time.process_time() - start, 5)#花費時間 =round 小數點第5位(,5) 
         print(f"Hash found: {new_block.hash} @ difficulty {self.difficulty}, time cost: {time_consumed}s")
         self.chain.append(new_block)
+
+Block
+BlockChain
 
