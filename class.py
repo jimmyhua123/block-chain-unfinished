@@ -24,7 +24,7 @@ class Block:#區塊格式
 class BlockChain:
     def __init__(self):
         self.adjust_difficulty_blocks = 10  #難度調節區塊數
-        self.difficulty =   5   #目前難度
+        self.difficulty =   2   #目前難度
         self.block_time =   30  #出塊時間
         self.miner_rewards =   10  #挖礦獎勵
         self.block_limitation   =   32  #區塊容量
@@ -104,7 +104,7 @@ class BlockChain:
         print(f"Hash found: {new_block.hash} @ difficulty {self.difficulty}, time cost: {time_consumed}s")
         self.chain.append(new_block)
 
-    def adjust_difficulty(self):
+    def adjust_difficulty(self):#調整哈希難度
         if len(self.chain) % self.adjust_difficulty_blocks != 1:
             return self.difficulty
         elif len(self.chain) <= self.adjust_difficulty_blocks:
@@ -120,7 +120,7 @@ class BlockChain:
                 print(f"Average block time:{average_time_consumed}s. High up the difficulty")
                 self.difficulty += 1
 
-    def get_balance(self, account):
+    def get_balance(self, account):#計算帳戶餘額
         balance = 0
         for block in self.chain:
             # Check miner reward
@@ -138,7 +138,7 @@ class BlockChain:
                     balance += transaction.amounts
         return balance
 
-    def verify_blockchain(self):
+    def verify_blockchain(self):#確認哈希值是否正確
         previous_hash = ''
         for idx,block in enumerate(self.chain):
             if self.get_hash(block, block.nonce) != block.hash:
@@ -154,14 +154,16 @@ class BlockChain:
 if __name__ == '__main__':
     block = BlockChain()
     block.create_genesis_block()
-    block.mine_block('lkm543')
-
+    block.mine_block('hua')
+    block.mine_block('hua')
+    block.mine_block('hua')
+    block.mine_block('hua')
     block.verify_blockchain()
     
-    print("Insert fake transaction.")
-    fake_transaction = Transaction('test123', 'address', 100, 5, 'Test')    
-    block.chain[1].transactions.append(fake_transaction)
-    block.mine_block('lkm543')
+    # print("Insert fake transaction.")
+    # fake_transaction = Transaction('test123', 'address', 100, 5, 'Test')    
+    # block.chain[1].transactions.append(fake_transaction)
+    # block.mine_block('lkm543')
 
-    block.verify_blockchain()
+    # block.verify_blockchain()
 
