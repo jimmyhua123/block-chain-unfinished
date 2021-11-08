@@ -1,4 +1,4 @@
-import hashlib,time
+import hashlib,time,rsa
 #print("hello")
 class Transaction:#交易格式   
     def __init__(self,sender,receiver,amounts,fee,message):
@@ -151,19 +151,100 @@ class BlockChain:
         print("Hash correct!")
         return True
 
+    def generate_address(self):
+        #使用RSA加密法隨機產生一對公私鑰，並且轉存成pkcs1形式
+        public, private = rsa.newkeys(512)
+        public_key = public.save_pkcs1()
+        private_key = private.save_pkcs1()
+        return self.get_address_from_public(public_key), private_key
+
+    def get_address_from_public(self, public):
+        #把其中一些不必要與重複的內容過濾掉，只留下中間有意義的部分：
+        address = str(public).replace('\\n','')
+        address = address.replace("b'-----BEGIN RSA PUBLIC KEY-----", '')
+        address = address.replace("-----END RSA PUBLIC KEY-----'", '')
+        address = address.replace(' ', '')
+        print('Address:', address)
+        return address
+
+    def initialize_transaction(self, sender, receiver, amount, fee, message):
+        #初始化一筆交易 先確定發送者的帳戶餘額是否足夠
+        if self.get_balance(sender) < amount + fee:
+            print("Balance not enough!")
+            return False
+        new_transaction = Transaction(sender, receiver, amount, fee, message)
+        return new_transaction
+
+    def sign_transaction(self, transaction, private_key):
+        #透過sign_transaction簽署。
+        private_key_pkcs = rsa.PrivateKey.load_pkcs1(private_key)
+        transaction_str = self.transaction_to_string(transaction)
+        signature = rsa.sign(transaction_str.encode('utf-8'), private_key_pkcs, 'SHA-1')
+        return signature
+
+    def add_transaction(self, transaction, signature):
+        #先試著用地址反推回原本的公鑰，再用公鑰解密當初這筆交易紀錄的簽章看看，
+        #如果公鑰解的開就可以代表是公鑰持有人本人所簽核的，這便是剛剛提到的"數位簽章"。
+        public_key = '-----BEGIN RSA PUBLIC KEY-----\n'
+        public_key += transaction.sender
+        public_key += '\n-----END RSA PUBLIC KEY-----\n'
+        public_key_pkcs = rsa.PublicKey.load_pkcs1(public_key.encode('utf-8'))
+        transaction_str = self.transaction_to_string(transaction)
+        if transaction.fee + transaction.amounts > self.get_balance(transaction.sender):
+            print("Balance not enough!")
+            return False
+        try:
+            # 驗證發送者
+            rsa.verify(transaction_str.encode('utf-8'), signature, public_key_pkcs)
+            print("Authorized successfully!")
+            self.pending_transactions.append(transaction)
+            return True
+        except Exception:
+            print("RSA Verified wrong!")
+            return False
+
+    def start(self):
+        #首先先為我們自己開一個地址，接著創造創世塊。然後便可以不停地
+        #挖掘新區塊→調整難度→挖掘新區塊→調整難度→....周而復始，而且中間還可以發起交易！
+        address, private = self.generate_address()
+        self.create_genesis_block()
+        while(True):
+            self.mine_block(address)
+            self.adjust_difficulty()
+
 if __name__ == '__main__':
     block = BlockChain()
-    block.create_genesis_block()
-    block.mine_block('hua')
-    block.mine_block('hua')
-    block.mine_block('hua')
-    block.mine_block('hua')
-    block.verify_blockchain()
-    
-    # print("Insert fake transaction.")
-    # fake_transaction = Transaction('test123', 'address', 100, 5, 'Test')    
-    # block.chain[1].transactions.append(fake_transaction)
-    # block.mine_block('lkm543')
+    # block.start()
+    address, private = block.generate_address()
 
+    block.create_genesis_block()
+    block.mine_block(address)
+    # Step1: initialize a transaction
+    transaction = block.initialize_transaction(address, 'test123', 100, 1, 'Test')
+    if transaction:
+        # Step2: Sign your transaction
+        signature = block.sign_transaction(transaction, private)
+        # Step3: Send it to blockchain
+        block.add_transaction(transaction, signature)
+    block.mine_block(address)
+
+    block.verify_blockchain()
+    block.mine_block('hua')
+    block.mine_block('hua')
+
+    block.verify_blockchain()
+
+    # print("Insert fake transaction.")
+    # fake_transaction = Transaction('test123', address, 100, 1, 'Test')
+    # block.chain[1].transactions.append(fake_transaction)
+    # block.mine_block(address)
     # block.verify_blockchain()
+# if __name__ == '__main__':
+#     block = BlockChain()
+#     block.create_genesis_block()
+#     block.mine_block('hua')
+#     block.mine_block('hua')
+
+#     block.verify_blockchain()
+
 
