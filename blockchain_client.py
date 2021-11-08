@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import pickle
 import socket
 import sys
@@ -8,7 +8,7 @@ import time
 import rsa
 
 
-def handle_receive():
+def handle_receive():#接收訊息
     while True:
         response = client.recv(4096)
         if response:
@@ -57,7 +57,7 @@ def initialize_transaction(sender, receiver, amount, fee, message):
     new_transaction = Transaction(sender, receiver, amount, fee, message)
     return new_transaction
 
-def sign_transaction(transaction, private):
+def sign_transaction(transaction, private):#過濾前後
     private_key = '-----BEGIN RSA PRIVATE KEY-----\n'
     private_key += private
     private_key += '\n-----END RSA PRIVATE KEY-----\n'
@@ -65,7 +65,10 @@ def sign_transaction(transaction, private):
     transaction_str = transaction_to_string(transaction)
     signature = rsa.sign(transaction_str.encode('utf-8'), private_key_pkcs, 'SHA-1')
     return signature
-
+    
+    
+    ####控制流程###
+    
 if __name__ == "__main__":
     target_host = "127.0.0.1"
     target_port = int(sys.argv[1])
@@ -76,9 +79,9 @@ if __name__ == "__main__":
     receive_handler.start()
 
     command_dict = {
-        "1": "generate_address",
-        "2": "get_balance",
-        "3": "transaction"
+        "1": "generate_address",    #產生地址與公私鑰
+        "2": "get_balance",         #向節點詢問帳戶的餘額
+        "3": "transaction"          #發起並簽署交易後送到節點端等待礦工確認與上鏈
     }
 
     while True:
