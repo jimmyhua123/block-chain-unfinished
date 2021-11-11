@@ -1,0 +1,18 @@
+day 6
+1.type ' python G:\PYworkspace\區塊鏈\block-chain-\blockchain_server.py 1111 ' in 終端機
+2.type ' python G:\PYworkspace\區塊鏈\block-chain-\blockchain_client.py 1111 ' in another 終端機
+3.in server 終端機有     Miner address: 
+                        Miner private: 
+4.在 client 終端機有 
+    1.產生地址與公私鑰
+    2.向節點詢問帳戶的餘額
+    3.發起並簽署交易後送到節點端等待礦工確認與上鏈
+
+day 7
+1.type ' python G:\PYworkspace\區塊鏈\block-chain-\blockchain_server.py 1111 ' in 終端機
+2.type ' python G:\PYworkspace\區塊鏈\block-chain-\blockchain_server.py 1112 ' in another 終端機
+3.type ' python G:\PYworkspace\區塊鏈\block-chain-\blockchain_server.py 1112 127.0.0.1:1111 in another 終端機
+
+1112 address:MEgCQQCUl7JVe70vUv/BrM4W9lx/ACyLA5yn5TJOTP7RvK83MYk4F0uc9ojW4Or9s+/mrlObLnryp0N69yugjOjNlFfjAgMBAAE=
+1112 private:MIIBPQIBAAJBAJSXslV7vS9S/8Gszhb2XH8ALIsDnKflMk5M/tG8rzcxiTgXS5z2iNbg6v2z7+auU5suevKnQ3r3K6CM6M2UV+MCAwEAAQJBAIX1mI2eZ3khn3cwXf+vjMXmF0IgOHvYkhirK1NUggEDkVtTaWFJ0dvShnEpaF4S42nCUjX6vPmpuecBRSE4l1ECIwDIxqsFmOyrqOJys13wUUtnr7nIZXW1gIMzVCBEOByDyrfZAh8AvXacMQjxxDD77t/KIC27e+8nIKVwsB5bclN3xhQbAiJlV6JLmP0dSInEy7TG8MHW/GQSOuRHUS7oYbZHuOrruw9BAh5uwe/9GmV7c8dTla/rr9ByWxRcmVqPGrAK3ZCfUxECIwCepf3TW14QCEEmeeHD2N+Ldk5q9rMJV0XlnIwqV2Z9Q95k
+
